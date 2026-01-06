@@ -212,3 +212,67 @@ For questions, collaboration, or access to raw data:
 
 **Last Updated**: 2026-01-07  
 **Reproducibility Hash**: `8f3a9c2b`
+**GitHub is asking for a commit message!**
+
+Here's what to put:
+
+---
+
+
+```
+Initial commit - Fibonacci Topological Shield
+```
+
+### **Extended description** (optional, but helpful):
+```
+Priority lock: 2026-01-07
+Hash seed: 8f3a9c2b
+
+Demonstration of Fibonacci quasi-periodic drive providing 2.53× SNR 
+improvement in a 7-strand copper braid. Extends Dumitrescu et al. (2022) 
+ion-trap time crystal work to room-temperature macroscopic systems.
+
+Key results:
+- SNR gain: 2.53× (p < 0.001)
+- Breaking point: 2.85× baseline noise
+- Protected frequency: 3.48 Hz
+- Mechanism: Aubry-André localization
+
+Status: Simulation validated, hardware validation in progress.
+```
+
+---
+
+## VISUAL GUIDE
+
+When you see the commit screen, it looks like this:
+
+```
+┌─────────────────────────────────────────────┐
+│ Commit new file                             │
+├─────────────────────────────────────────────┤
+│                                             │
+│ [Initial commit - Fibonacci Topological Shield] ← Short title
+│                                             │
+│ ┌─────────────────────────────────────────┐ │
+│ │ Priority lock: 2026-01-07               │ │
+│ │ Hash seed: 8f3a9c2b                     │ │ ← Extended description
+│ │                                         │ │   (optional)
+│ │ Demonstration of Fibonacci quasi-...    │ │
+│ └─────────────────────────────────────────┘ │
+│                                             │
+│ [Commit directly to main branch]            │
+│                                             │
+│         [Cancel]  [Commit new file]         │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## MINIMAL VERSION (if you're in a hurry)
+
+
+Initial commit - Priority lock 2026-01-07
+```
+
+
