@@ -275,4 +275,163 @@ When you see the commit screen, it looks like this:
 Initial commit - Priority lock 2026-01-07
 ```
 
+FILE 4: Arduino Firmware
+Filename: hardware/arduino/fibo_drive.ino
+
+
+/*
+ * Fibonacci Topological Shield - Arduino Firmware
+ * Version: 1.0-locked
+ * Hash seed: 8f3a9c2b
+ * Date: 2026-01-07
+ * 
+ * Generates 7.83 kHz carrier with Fibonacci-spaced pulse widths
+ * for topological protection of 3.48 Hz vortex mode
+ */
+
+// ========== LOCKED CONSTANTS ==========
+const float PHI = 1.6180339887;        // Golden ratio
+const unsigned long F_CARRIER = 7830;  // 7.83 kHz carrier
+const unsigned long DT0_US = 1000;     // 1 ms initial pulse width (microseconds)
+const int N_PULSES = 15;               // Number of Fibonacci pulses
+const int DRIVE_PIN = 9;               // PWM output pin
+const int LED_PIN = 13;                // Status LED
+
+// ========== GLOBAL STATE ==========
+unsigned long pulse_widths[N_PULSES];  // Pre-computed Fibonacci widths
+int current_pulse = 0;
+unsigned long pulse_start_time = 0;
+bool pulse_active = false;
+
+// ========== SETUP ==========
+void setup() {
+  // Initialize pins
+  pinMode(DRIVE_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+  
+  // Serial for monitoring
+  Serial.begin(115200);
+  Serial.println("Fibonacci Topological Shield v1.0");
+  Serial.print("Hash seed: 8f3a9c2b\n");
+  
+  // Pre-compute Fibonacci pulse widths
+  compute_fibonacci_widths();
+  
+  // Print pulse schedule
+  Serial.println("\nPulse Schedule (microseconds):");
+  for (int i = 0; i < N_PULSES; i++) {
+    Serial.print("Pulse ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(pulse_widths[i]);
+  }
+  
+  // Start first pulse
+  start_next_pulse();
+  
+  Serial.println("\nDrive active. Monitoring 3.48 Hz vortex...");
+}
+
+// ========== MAIN LOOP ==========
+void loop() {
+  unsigned long now = micros();
+  
+  if (pulse_active) {
+    // Generate 7.83 kHz carrier during pulse
+    unsigned long elapsed = now - pulse_start_time;
+    
+    if (elapsed < pulse_widths[current_pulse]) {
+      // Active pulse - generate carrier
+      generate_carrier();
+    } else {
+      // Pulse complete - turn off and advance
+      digitalWrite(DRIVE_PIN, LOW);
+      digitalWrite(LED_PIN, LOW);
+      pulse_active = false;
+      current_pulse++;
+      
+      if (current_pulse < N_PULSES) {
+        // Start next pulse
+        start_next_pulse();
+      } else {
+        // Cycle complete - restart
+        Serial.println("\nFibonacci cycle complete. Restarting...");
+        current_pulse = 0;
+        delay(1000);  // 1 second gap between cycles
+        start_next_pulse();
+      }
+    }
+  }
+}
+
+// ========== HELPER FUNCTIONS ==========
+
+void compute_fibonacci_widths() {
+  // Generate Fibonacci-spaced pulse widths: Δt_n = Δt_0 * φ^n
+  for (int i = 0; i < N_PULSES; i++) {
+    pulse_widths[i] = (unsigned long)(DT0_US * pow(PHI, i));
+  }
+}
+
+void start_next_pulse() {
+  pulse_start_time = micros();
+  pulse_active = true;
+  digitalWrite(LED_PIN, HIGH);
+  
+  Serial.print("Starting pulse ");
+  Serial.print(current_pulse);
+  Serial.print(" (");
+  Serial.print(pulse_widths[current_pulse] / 1000.0);
+  Serial.println(" ms)");
+}
+
+void generate_carrier() {
+  // Generate 7.83 kHz square wave (50% duty cycle)
+  // Period = 1/7830 Hz = 127.7 μs
+  // High for 63.85 μs, Low for 63.85 μs
+  
+  static unsigned long last_toggle = 0;
+  static bool carrier_state = false;
+  unsigned long now = micros();
+  
+  if (now - last_toggle >= 64) {  // ~64 μs for 7.83 kHz
+    carrier_state = !carrier_state;
+    digitalWrite(DRIVE_PIN, carrier_state ? HIGH : LOW);
+    last_toggle = now;
+  }
+}
+
+// ========== OPTIONAL: HALL SENSOR MONITORING ==========
+// Uncomment if Hall sensor connected to analog pin A0
+
+/*
+const int HALL_PIN = A0;
+const int SAMPLE_RATE_HZ = 1000;  // 1 kHz sampling
+
+void monitor_hall_sensor() {
+  static unsigned long last_sample = 0;
+  unsigned long now = millis();
+  
+  if (now - last_sample >= 1000 / SAMPLE_RATE_HZ) {
+    int hall_reading = analogRead(HALL_PIN);
+    
+    // Convert to millivolts (assuming 5V Arduino)
+    float voltage_mv = (hall_reading / 1023.0) * 5000.0;
+    
+    // A1324 outputs 2.5V at 0 Gauss, 5 mV/G sensitivity
+    float field_gauss = (voltage_mv - 2500.0) / 5.0;
+    
+    Serial.print("Hall: ");
+    Serial.print(field_gauss);
+    Serial.println(" G");
+    
+    last_sample = now;
+  }
+}
+
+// Add to loop():
+// monitor_hall_sensor();
+*/
+
+// ========== END OF FIRMWARE ==========
 
